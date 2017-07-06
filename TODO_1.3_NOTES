@@ -1,4 +1,26 @@
 
+POC:
+
+~/repobuild$ source meta-agl/scripts/aglsetup.sh -m raspberrypi3 -b build-rpi3-package agl-all-features
+
+cat << EOF >> conf/local.conf
+# dummy ... 
+PACKAGE_FEED_URIS = "https://example.com/packagerepos/release \
+                     https://example.com/packagerepos/updates"
+PACKAGE_FEED_BASE_PATHS = "rpm"
+PACKAGE_FEED_ARCHS = "all  armv7vehf_neon_vfpv4  raspberrypi3  x86_64_nativesdk"
+
+#
+EXTRA_IMAGE_FEATURES_append = " package-management"
+#watch out for SDKIMAGE_FEATURES !
+
+EOF
+
+
+
+-----------------------------------------------------------------------------------------------------------
+REFERENCES:
+
 From YP manual:
 
 a) 
@@ -112,4 +134,7 @@ The reason for this restriction is because BitBake does not properly schedule th
 You can use the PACKAGE_FEED_ARCHS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_URIS variables to pre-configure target images to use a package feed. If you do not define these variables, then manual steps as described in the subsequent sections are necessary to configure the target. You should set these variables before building the image in order to produce a correctly configured image.
 
 When your build is complete, your packages reside in the ${TMPDIR}/deploy/packageformat directory. For example, if ${TMPDIR} is tmp and your selected package type is IPK, then your IPK packages are available in tmp/deploy/ipk. 
+
+
+
 
