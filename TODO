@@ -7,6 +7,8 @@ AI's (all):
 Tasks:
 1.1 - (jsmoeller): PoC for signature lock
 1.2 - (stephane/ronan): POC for rpm generation out of SDK ? (3rd party generate library rpm with SDK)
+1.3 - (all): confirm package-manager + update feeds work in yocto build
+1.4 - (all): repository signing (as it is not done in yocto)
 
 2.1 - (jsmoeller): Generate RPM's out of signature-locked sstate-cache
 2.2 - (stephane/ronan): Generate SDK out of signature-locked sstate-cache
