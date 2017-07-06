@@ -1,0 +1,18 @@
+
+[Unit]
+SourcePath=@RENESAS_DATADIR@/bin/rc.pvr
+Before=weston.service
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=@RENESAS_DATADIR@/bin/rc.pvr start
+ExecStop=@RENESAS_DATADIR@/bin/rc.pvr stop
+
+[Install]
+RequiredBy=weston.service
