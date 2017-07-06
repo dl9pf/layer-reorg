@@ -1,2 +1,30 @@
 1.1 - (jsmoeller): PoC for signature lock
 
+
+Step #1 build and lock signatures:
+##################################
+(SYSTEM = debian 8.8)
+
+SSTATE_DIR = "${TOPDIR}/sstate-cache"
+
+bitbake agl-demo-platform
+
+bitbake -S none agl-demo-platform
+
+-> Writing locked sigs to /home/dl9pf/repobuild/build-rpi3/locked-sigs.inc
+
+
+
+Step #2 generate cache matching locked signatures:
+##################################################
+# syntax: gen-lockedsig-cache <locked-sigs.inc> <input-cachedir> <output-cachedir> <nativelsbstring> [filterfile]
+
+gen-lockedsig-cache locked-sigs.inc ./sstate-cache ./locked-cache universal-4.9
+
+ISSUE:
+# NATIVELSBSTRING   = "universal-4.9"  <--- EEEK    "universal-4.8"/"universal-4.9"  or "universal" for gcc >= 5.0
+
+
+
+Step #3 use locked signature to recreate build.
+###############################################
