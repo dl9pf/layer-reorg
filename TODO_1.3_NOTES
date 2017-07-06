@@ -1,0 +1,115 @@
+
+From YP manual:
+
+a) 
+PACKAGE_FEED_ARCHS¶
+
+    Specifies the package architectures used as part of the package feed URIs during the build. The PACKAGE_FEED_ARCHS variable is appended to the final package feed URI, which is constructed using the PACKAGE_FEED_URIS and PACKAGE_FEED_BASE_PATHS variables.
+
+    Consider the following example where the PACKAGE_FEED_URIS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_ARCHS variables are defined in your local.conf file:
+
+         PACKAGE_FEED_URIS = "https://example.com/packagerepos/release \
+                              https://example.com/packagerepos/updates"
+         PACKAGE_FEED_BASE_PATHS = "rpm rpm-dev"
+         PACKAGE_FEED_ARCHS = "all core2-64"
+                        
+
+    Given these settings, the resulting package feeds are as follows:
+
+         https://example.com/packagerepos/release/rpm/all
+         https://example.com/packagerepos/release/rpm/core2-64
+         https://example.com/packagerepos/release/rpm-dev/all
+         https://example.com/packagerepos/release/rpm-dev/core2-64
+         https://example.com/packagerepos/updates/rpm/all
+         https://example.com/packagerepos/updates/rpm/core2-64
+         https://example.com/packagerepos/updates/rpm-dev/all
+         https://example.com/packagerepos/updates/rpm-dev/core2-64
+                        
+
+PACKAGE_FEED_BASE_PATHS¶
+
+    Specifies the base path used when constructing package feed URIs. The PACKAGE_FEED_BASE_PATHS variable makes up the middle portion of a package feed URI used by the OpenEmbedded build system. The base path lies between the PACKAGE_FEED_URIS and PACKAGE_FEED_ARCHS variables.
+
+    Consider the following example where the PACKAGE_FEED_URIS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_ARCHS variables are defined in your local.conf file:
+
+         PACKAGE_FEED_URIS = "https://example.com/packagerepos/release \
+                              https://example.com/packagerepos/updates"
+         PACKAGE_FEED_BASE_PATHS = "rpm rpm-dev"
+         PACKAGE_FEED_ARCHS = "all core2-64"
+                        
+
+    Given these settings, the resulting package feeds are as follows:
+
+         https://example.com/packagerepos/release/rpm/all
+         https://example.com/packagerepos/release/rpm/core2-64
+         https://example.com/packagerepos/release/rpm-dev/all
+         https://example.com/packagerepos/release/rpm-dev/core2-64
+         https://example.com/packagerepos/updates/rpm/all
+         https://example.com/packagerepos/updates/rpm/core2-64
+         https://example.com/packagerepos/updates/rpm-dev/all
+         https://example.com/packagerepos/updates/rpm-dev/core2-64
+                        
+
+PACKAGE_FEED_URIS¶
+
+    Specifies the front portion of the package feed URI used by the OpenEmbedded build system. Each final package feed URI is comprised of PACKAGE_FEED_URIS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_ARCHS variables.
+
+    Consider the following example where the PACKAGE_FEED_URIS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_ARCHS variables are defined in your local.conf file:
+
+         PACKAGE_FEED_URIS = "https://example.com/packagerepos/release \
+                              https://example.com/packagerepos/updates"
+         PACKAGE_FEED_BASE_PATHS = "rpm rpm-dev"
+         PACKAGE_FEED_ARCHS = "all core2-64"
+                        
+
+    Given these settings, the resulting package feeds are as follows:
+
+         https://example.com/packagerepos/release/rpm/all
+         https://example.com/packagerepos/release/rpm/core2-64
+         https://example.com/packagerepos/release/rpm-dev/all
+         https://example.com/packagerepos/release/rpm-dev/core2-64
+         https://example.com/packagerepos/updates/rpm/all
+         https://example.com/packagerepos/updates/rpm/core2-64
+         https://example.com/packagerepos/updates/rpm-dev/all
+         https://example.com/packagerepos/updates/rpm-dev/core2-64
+                        
+
+
+
+b)
+
+4.23.4.1. Build Considerations¶
+
+This section describes build considerations of which you need to be aware in order to provide support for runtime package management.
+
+When BitBake generates packages, it needs to know what format or formats to use. In your configuration, you use the PACKAGE_CLASSES variable to specify the format:
+
+    Open the local.conf file inside your Build Directory (e.g. ~/poky/build/conf/local.conf).
+
+    Select the desired package format as follows:
+
+         PACKAGE_CLASSES ?= “package_packageformat”
+                                
+
+    where packageformat can be "ipk", "rpm", and "deb", which are the supported package formats.
+    Note
+    Because the Yocto Project supports three different package formats, you can set the variable with more than one argument. However, the OpenEmbedded build system only uses the first argument when creating an image or Software Development Kit (SDK).
+
+If you would like your image to start off with a basic package database containing the packages in your current build as well as to have the relevant tools available on the target for runtime package management, you can include "package-management" in the IMAGE_FEATURES variable. Including "package-management" in this configuration variable ensures that when the image is assembled for your target, the image includes the currently-known package databases as well as the target-specific tools required for runtime package management to be performed on the target. However, this is not strictly necessary. You could start your image off without any databases but only include the required on-target package tool(s). As an example, you could include "opkg" in your IMAGE_INSTALL variable if you are using the IPK package format. You can then initialize your target's package database(s) later once your image is up and running.
+
+Whenever you perform any sort of build step that can potentially generate a package or modify an existing package, it is always a good idea to re-generate the package index with:
+
+    $ bitbake package-index
+                    
+
+Realize that it is not sufficient to simply do the following:
+
+    $ bitbake some-package package-index
+                    
+
+The reason for this restriction is because BitBake does not properly schedule the package-index target fully after any other target has completed. Thus, be sure to run the package update step separately.
+
+You can use the PACKAGE_FEED_ARCHS, PACKAGE_FEED_BASE_PATHS, and PACKAGE_FEED_URIS variables to pre-configure target images to use a package feed. If you do not define these variables, then manual steps as described in the subsequent sections are necessary to configure the target. You should set these variables before building the image in order to produce a correctly configured image.
+
+When your build is complete, your packages reside in the ${TMPDIR}/deploy/packageformat directory. For example, if ${TMPDIR} is tmp and your selected package type is IPK, then your IPK packages are available in tmp/deploy/ipk. 
+
