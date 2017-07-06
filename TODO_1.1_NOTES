@@ -21,10 +21,28 @@ Step #2 generate cache matching locked signatures:
 
 gen-lockedsig-cache locked-sigs.inc ./sstate-cache ./locked-cache universal-4.9
 
-ISSUE:
+ISSUE 1:
 # NATIVELSBSTRING   = "universal-4.9"  <--- EEEK    "universal-4.8"/"universal-4.9"  or "universal" for gcc >= 5.0
 
 
 
 Step #3 use locked signature to recreate build.
 ###############################################
+
+#cp locked-sigs.inc to conf/
+cp locked-sigs.inc conf/
+
+#change local.conf to use locked-cache as SSTATE_MIRROR and change SSTATE_DIR to validate new input:
+cat << EOF > conf/local.conf
+
+SSTATE_DIR := "\${TOPDIR}/sstate-cache-from-locked"
+SSTATE_MIRRORS := " file://.* file://home/dl9pf/repo-clone-AGL/build-rpi3/locked-cache/PATH  \n "
+require locked-sigs.inc
+
+
+EOF
+
+# now rebuild with sigs locked from locked-cache
+
+bitbake agl-demo-platform
+
