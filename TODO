@@ -1,0 +1,19 @@
+AI's (all):
+- rework packagegroups
+- transform into core + as discussed in vannes
+- slides will be uploaded under doc/  ASAP for reference
+- define workflow for staging sw components (staging repo) and process/conditions/rules how to enter core
+
+Tasks:
+1.1 - (jsmoeller): PoC for signature lock
+1.2 - (stephane/ronan): POC for rpm generation out of SDK ? (3rd party generate library rpm with SDK)
+
+2.1 - (jsmoeller): Generate RPM's out of signature-locked sstate-cache
+2.2 - (stephane/ronan): Generate SDK out of signature-locked sstate-cache
+
+3.1 - (stephane/ronan): Extend SDK from rpm repositories
+3.2 - (jsmoeller): unified rpm generation from core up to profile
+
+
+
+
