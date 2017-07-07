@@ -15,3 +15,7 @@ https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/lib/oe/gpg_sign.py
 
 
 Risk: low-medium (solutions exist and we merely need to adapt the python classes)
+
+Need to try it on a build ...
+
+For Key setup apply likewise: https://gist.github.com/fernandoaleman/1376720
