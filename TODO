@@ -3,12 +3,15 @@ AI's (all):
 - transform into core + as discussed in vannes
 - slides will be uploaded under doc/  ASAP for reference
 - define workflow for staging sw components (staging repo) and process/conditions/rules how to enter core
+- we should define 3-4 generic targets (generic-x86-64, generic-armv7ve, generic-armv7thf, generic-aarch64) 
+  -> these are used for the binary base builds (no specific MACHINE - those reuse these binaries)
 
 Tasks:
-1.1 - (jsmoeller): PoC for signature lock
+1.1 - (jsmoeller): PoC for signature lock                                                                - done, see notes/summary
 1.2 - (stephane/ronan): POC for rpm generation out of SDK ? (3rd party generate library rpm with SDK)
-1.3 - (all): confirm package-manager + update feeds work in yocto build
-1.4 - (all): repository signing (as it is not done in yocto)
+1.3 - (jsmoeller): confirm package-manager + update feeds work in yocto build                            - done, see notes
+1.4 - (jsmoeller): repository signing / metadata signing                                                 - done, see notes
+1.5 - (all): gpg signature check on target using package manager
 
 2.1 - (jsmoeller): Generate RPM's out of signature-locked sstate-cache
 2.2 - (stephane/ronan): Generate SDK out of signature-locked sstate-cache
@@ -18,4 +21,59 @@ Tasks:
 
 
 
+########################################################################################################################
+########################################################################################################################
+
+Task summaries:
+1.1 - (jsmoeller): PoC for signature lock
+-----------------------------------------
+ISSUE 1: NATIVELSBSTRING   = "universal-4.9"  <--- EEEK    "universal-4.8"/"universal-4.9"  or "universal" for gcc >= 5.0
+ISSUE 2: ERROR: The agl-demo-platform-crosssdk:do_bundle_initramfs sig is computed to be d3c9c33199c7f0e8682a66b9e1688537,
+                but the sig is locked to 3f647c1a5c497814008c802cc4ee5f7b in SIGGEN_LOCKEDSIGS_t-raspberrypi3
+ISSUE 2:  -> likely the images (possibly also the initramfs) should not be in the locked signatures need to investigate
+ISSUE 3: Seems like -native is not used properly from cache ... could be bug in gen-lockedsig-cache or procedure above.
+         Need to investigate eSDK .
+
+Risk: medium
+
+Risks and todo's:
+- NATIVELSBSTRING can be different between hosts. We can only host the -native prebuilts (running on host) for a 
+  known env (aka e.g. Ubuntu 16.04 or Debian 8/9) .
+  ==> This means we're still not fully 'universal' and still depend on the hosts gcc version.
+      We could enforce >= gcc5, but that is not easy for all current distros.
+  >>
+  uninative: rebuild uninative for gcc 4.8 and 4.9
+  Some c++ libraries fail to build if uninative is built
+  with gcc 5.x and host gcc version is either 4.8 or 4.9.
+
+  The issue should be solved by making separate uninative sstate
+  directory structure sstate-cache/universal-<gcc version> for host gcc
+  versions 4.8 and 4.9. This causes rebuilds of uninative if host gcc
+  is either 4.8 or 4.9 and it doesn't match gcc version used to build
+  uninative.
+
+  [YOCTO #10441]
+  <<
+- extending of gen-locked-sig-cache and postprocessing of the locked-sigs will be needed, but we can leverage the 
+  eSDK as example
+
+
+1.3 - (jsmoeller): confirm package-manager + update feeds work in yocto build
+-----------------------------------------------------------------------------
+Feeds can be specified already at build stage (though we might have a more complex setup in the end with more repos).
+Package management can be added to the EXTRA_IMAGE_FEATURES += "package-management"
+
+Risk: low
+
+
+1.4 - (all): repository signing / metadata signing
+##################################################
+Singing is supported in Yocto but only a 'local' signer is implemented. This means that the *private* key
+would need to be on the build-host (aka jenkins slave). Which is a no-go from a security POV.
+The key and the signing should be handled by a dedicated daemon (like bs_sign) on a separate & secured host.
+Signing requests should be send and received by the class.
+
+AI: implement a remote signer within the classes that already exist
+
+Risk: low (solutions exists, we merely need to extend the existing classes)
 

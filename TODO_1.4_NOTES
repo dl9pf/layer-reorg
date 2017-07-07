@@ -1,0 +1,17 @@
+1.4 - (all): repository signing (as it is not done in yocto) 
+############################################################
+
+https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/classes/sign_rpm.bbclass
+https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/classes/sign_package_feed.bbclass
+https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/classes/package_rpm.bbclass
+https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/lib/oe/gpg_sign.py
+
+
+=> signing supported, but only 'local' during build.
+=> private key would have to be available on the host building 
+=> not 'secure'
+=> signing key should be handled by separate remote box running a signing daemon (like bs_sign)
+=> needs development efforts
+
+
+Risk: low-medium (solutions exist and we merely need to adapt the python classes)

@@ -26,8 +26,7 @@ Step #2 generate cache matching locked signatures:
 gen-lockedsig-cache locked-sigs.inc ./sstate-cache ./locked-cache universal-4.9
 <<--
 
-ISSUE 1:
-# NATIVELSBSTRING   = "universal-4.9"  <--- EEEK    "universal-4.8"/"universal-4.9"  or "universal" for gcc >= 5.0
+ISSUE 1: NATIVELSBSTRING   = "universal-4.9"  <--- EEEK    "universal-4.8"/"universal-4.9"  or "universal" for gcc >= 5.0
 
 
 
@@ -58,3 +57,13 @@ rm -rf tmp
 bitbake agl-demo-platform
 
 <<--
+
+ISSUE 2: ERROR: The agl-demo-platform-crosssdk:do_bundle_initramfs sig is computed to be d3c9c33199c7f0e8682a66b9e1688537, but the sig is locked to 3f647c1a5c497814008c802cc4ee5f7b in SIGGEN_LOCKEDSIGS_t-raspberrypi3
+ISSUE 2: likely the images (possibly also the initramfs) should not be in the locked signatures need to investigate further
+
+quick'n'dirty hack
+sed -i -e "/agl-demo-platform-crosssdk:/d" conf/locked-sigs.inc
+
+
+ISSUE 3: Seems like -native is not used properly from cache ... could be bug in gen-lockedsig-cache or procedure above . Need to investigate eSDK .
+

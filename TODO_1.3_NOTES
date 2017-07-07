@@ -17,6 +17,16 @@ EXTRA_IMAGE_FEATURES_append = " package-management"
 EOF
 
 
+bitbake agl-demo-platform-crosssdk
+
+bitbake package-index # <<<<<<<<<<-----------
+
+
+==> rpm repo with repodata in tmp/deploy/rpm  ==> good.
+
+
+ISSUE: signing rpms and signing repodata !
+
 
 -----------------------------------------------------------------------------------------------------------
 REFERENCES:
