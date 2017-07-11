@@ -16,6 +16,7 @@ Tasks:
 2.1 - (jsmoeller): Generate RPM's out of signature-locked sstate-cache    (depends on 1.1)
 2.2 - (stephane/ronan): Generate SDK out of signature-locked sstate-cache (depends on 1.1)
 
+
 3.1 - (stephane/ronan): Extend SDK from rpm repositories
 3.2 - (jsmoeller): unified rpm generation from core up to profile
 
