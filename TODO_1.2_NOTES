@@ -1,0 +1,55 @@
+The POC is OK:
+ - RPM build OK
+ - install RPM OK
+
+1) Add rpm-build to sdk:
+nativesdk-packagegroup-sdk-host.bbappend
+
++RDEPENDS_${PN} =+ " nativesdk-rpm-build"
+
+2) Environment:
+We must use bash for sh not dash (rpm build script use sh):
+Inside the docker the ssh session open a bash session, but sh is still dash.
+
+#dash -c ". /xdt/sdk/environment-setup-corei7-64-agl-linux"
+dash: 5: export: -march: bad variable name
+
+3) prepare source:
+
+We need at least 2 files:
+- spec file
+- source file (tar.gz)
+
+For the POC add command:
+. /xdt/sdk/environment-setup-corei7-64-agl-linux
+At the beginning of rpm section (%prep,%build,%install)
+
+This should be done by customize rpm macro, so transparent for user.
+
+
+3) build package:
+a)
+#rpmbuild  -ba --macros=/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros.rpmbuild:/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros:/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros.d/cmake --nodeps --target corei7_64-agl-linux --define '_build_name_fmt %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm' --define '__find_requires %{nil}' --define '__find_provides %{nil}'  --define="_prefix /usr"  agl-low-can-service.spec
+
+b)
+We need to use macro from the sysroot /xdt/sdk/sysroots/x86_64-aglsdk-linux not the host,
+so for the POC, I used:
+
+ --macros=/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros.rpmbuild:/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros:/xdt/sdk/sysroots/x86_64-aglsdk-linux/usr/lib/rpm/macros.d/cmake
+
+But we should find a nice way to do that.
+
+ps: I suppose some rpm macro customization should be done for sdk workflow build (path, default value, ...).
+
+c)
+Redefine the prefix:
+ --define="_prefix /usr"
+
+This will be a recurrent problem with the standard spec file, because the macro path (_prefix,...) is not the same for the build and for the installation. 
+But nothing  insurmountable.
+
+4) copy package:
+scp agl-low-can-service-4.0-1.corei7_64.rpm qemu:/
+
+5) Install package:
+rpm -i /agl-low-can-service-4.0-1.corei7_64.rpm
