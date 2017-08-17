@@ -1,0 +1,10 @@
+---
+Origin: meta-oe
+Origin-Url: https://github.com/openembedded/meta-openembedded
+Origin-Ref: 3aebb2354249527c5eb0e3574b9c46afb31cf12b
+Destination: dab
+Expiration: OE rocko
+Bug-AGL: null
+Upstream-Status: backport
+Reason: open-vm-tools is a very useful recipe for speeding up VMWare guests
+---

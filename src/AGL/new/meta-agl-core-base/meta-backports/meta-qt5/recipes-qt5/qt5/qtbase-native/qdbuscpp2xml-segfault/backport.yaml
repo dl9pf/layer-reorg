@@ -1,0 +1,12 @@
+---
+Origin: meta-qt5
+Origin-Url: https://github.com/meta-qt5/meta-qt5.git
+Origin-Ref: bf7cdd963008f2d61bc4c324fff2bfafe511fb5f
+Destination: dab
+Expiration: OE rocko
+Bug-AGL: SPEC-783
+Upstream-Status: backport
+Reason: This patch fixes a bug that causes the build to fail on recent Qt
+versions (e.g. the version present in Debian Stretch, but not that in Debian
+Jessie).
+---
